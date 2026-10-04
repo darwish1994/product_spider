@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product Spider</title>
+  <link rel="icon" href="../icons/icon32.png">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <header class="top">
+    <img src="../icons/icon48.png" alt="" width="28" height="28">
+    <h1>Product Spider</h1>
+    <nav>
+      <button class="tab active" data-tab="data">Data</button>
+      <button class="tab" data-tab="crawler">Crawler</button>
+      <button class="tab" data-tab="selectors">Selectors</button>
+      <button class="tab" data-tab="export">Export</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- DATA -->
+    <section id="tab-data" class="panel active">
+      <div class="toolbar">
+        <select id="domainFilter"><option value="">All sites</option></select>
+        <input type="search" id="search" placeholder="Search name, SKU, brand…">
+        <span id="count" class="muted"></span>
+        <span class="spacer"></span>
+        <button id="refresh">Refresh</button>
+        <button id="clearDomain" class="danger">Delete shown site</button>
+        <button id="clearAll" class="danger">Delete all</button>
+      </div>
+      <div class="table-wrap">
+        <table id="table"><thead></thead><tbody></tbody></table>
+        <div id="empty" class="empty" hidden>
+          No products yet. Open a shop, click the extension icon and press <b>Scrape this page</b> or <b>Start crawl</b>.
+        </div>
+      </div>
+      <div class="pager">
+        <button id="prev">‹ Prev</button>
+        <span id="pageInfo" class="muted"></span>
+        <button id="next">Next ›</button>
+      </div>
+    </section>
+
+    <!-- CRAWLER -->
+    <section id="tab-crawler" class="panel">
+      <div class="grid2">
+        <form id="crawlForm" class="card">
+          <h2>Crawl settings</h2>
+          <label class="full">Start URL <input type="url" id="startUrl" placeholder="https://shop.example.com/collections/all" required></label>
+          <div class="fields">
+            <label>Max pages <input type="number" name="maxPages" min="1" max="100000"></label>
+            <label>Max depth <input type="number" name="maxDepth" min="0" max="50"></label>
+            <label>Parallel tabs <input type="number" name="concurrency" min="1" max="6"></label>
+            <label>Delay between pages (ms) <input type="number" name="delayMs" min="0" step="100"></label>
+            <label>Wait after load (ms) <input type="number" name="renderWaitMs" min="0" step="100"></label>
+            <label>Page timeout (ms) <input type="number" name="pageTimeoutMs" min="5000" step="1000"></label>
+            <label>Max scrolls per page <input type="number" name="maxScrolls" min="0" max="100"></label>
+          </div>
+          <label class="full">Only follow URLs matching (regex, optional)
+            <input type="text" name="includePattern" placeholder="/(products?|collections|category)/">
+          </label>
+          <label class="full">Never follow URLs matching (regex, optional)
+            <input type="text" name="excludePattern" placeholder="/(blog|news|pages)/|[?&]sort=">
+          </label>
+          <div class="checks">
+            <label><input type="checkbox" name="autoScroll"> Auto-scroll (lazy loading / infinite scroll)</label>
+            <label><input type="checkbox" name="clickLoadMore"> Click “Load more” buttons</label>
+            <label><input type="checkbox" name="sameDomain"> Stay on the same domain</label>
+            <label><input type="checkbox" name="respectRobots"> Respect robots.txt</label>
+            <label><input type="checkbox" name="stripQuery"> Ignore ?query strings when de-duplicating URLs</label>
+            <label><input type="checkbox" name="showWindow"> Show the crawler window</label>
+          </div>
+          <div class="actions">
+            <button type="submit" id="cStart" class="primary">Start crawl</button>
+            <button type="button" id="cPause" hidden>Pause</button>
+            <button type="button" id="cResume" hidden>Resume</button>
+            <button type="button" id="cStop" class="danger" hidden>Stop</button>
+            <button type="button" id="cReset">Reset to defaults</button>
+          </div>
+        </form>
+
+        <div class="card">
+          <h2>Status</h2>
+          <div id="cIdle" class="muted">No crawl yet.</div>
+          <div id="cStatus" hidden>
+            <div class="bar"><div id="cBar"></div></div>
+            <div class="kpis">
+              <div><b id="kPages">0</b><span>pages visited</span></div>
+              <div><b id="kQueued">0</b><span>queued</span></div>
+              <div><b id="kFound">0</b><span>products seen</span></div>
+              <div><b id="kAdded">0</b><span>new products</span></div>
+            </div>
+            <p id="cState"></p>
+            <div id="cCurrent" class="muted mono"></div>
+            <button id="cClear" type="button">Clear crawl status</button>
+            <h3>Errors</h3>
+            <ul id="cErrors" class="errors mono"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SELECTORS -->
+    <section id="tab-selectors" class="panel">
+      <div class="grid2">
+        <div class="card">
+          <h2>Custom CSS selectors per site</h2>
+          <p class="muted">
+            Automatic detection (schema.org JSON-LD, microdata, OpenGraph and product-card heuristics) works on most shops.
+            When it misses something, define exactly what to extract here. These rules replace automatic detection on that site,
+            and also apply to its sub-domains.
+          </p>
+          <form id="selForm">
+            <div class="fields">
+              <label>Domain <input type="text" id="selDomain" placeholder="shop.example.com" required></label>
+              <label>Product item selector <input type="text" id="selItem" placeholder=".product-card  (empty = whole page is one product)"></label>
+            </div>
+            <label class="check"><input type="checkbox" id="selEnabled" checked> Enabled</label>
+            <table class="fieldtable">
+              <thead><tr><th>Column name</th><th>Selector (inside the item)</th><th></th></tr></thead>
+              <tbody id="selFields"></tbody>
+            </table>
+            <div class="actions">
+              <button type="button" id="selAdd">+ Add column</button>
+              <span class="spacer"></span>
+              <button type="button" id="selNew">New</button>
+              <button type="button" id="selDelete" class="danger">Delete</button>
+              <button type="submit" class="primary">Save</button>
+            </div>
+          </form>
+        </div>
+        <div class="card">
+          <h2>Saved sites</h2>
+          <ul id="selList" class="sitelist"></ul>
+          <h3>Selector syntax</h3>
+          <ul class="help">
+            <li><code>.title</code> → text of the first match</li>
+            <li><code>img.main@src</code> → an attribute (URLs become absolute)</li>
+            <li><code>a@href</code>, <code>[data-sku]@data-sku</code>, <code>.desc@html</code></li>
+            <li><code>@data-id</code> → attribute on the item itself</li>
+            <li>Columns named <code>price</code> / <code>originalPrice</code> are parsed into numbers + currency.</li>
+            <li>Any other column name is exported as-is (Excel column / SQL column).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPORT -->
+    <section id="tab-export" class="panel">
+      <div class="grid2">
+        <div class="card">
+          <h2>Download</h2>
+          <label class="full">Products to export
+            <select id="exportScope"><option value="">All sites</option></select>
+          </label>
+          <p id="exportCount" class="muted"></p>
+          <div class="exports">
+            <button data-export="xlsx" class="primary">Excel (.xlsx)</button>
+            <button data-export="csv">CSV</button>
+            <button data-export="json">JSON</button>
+          </div>
+          <h3>SQL dump</h3>
+          <div class="fields">
+            <label>Database
+              <select id="sqlDialect">
+                <option value="mysql">MySQL / MariaDB</option>
+                <option value="postgres">PostgreSQL</option>
+                <option value="sqlite">SQLite</option>
+              </select>
+            </label>
+            <label>Table name <input type="text" id="sqlTable" value="products" pattern="[A-Za-z_][A-Za-z0-9_]{0,63}"></label>
+          </div>
+          <div class="exports"><button data-export="sql">Download .sql</button></div>
+          <p class="muted">Creates the table if missing and upserts on <code>product_key</code>, so re-importing updates existing rows.</p>
+        </div>
+
+        <div class="card">
+          <h2>Send directly to MySQL</h2>
+          <p class="muted">
+            Browsers can't open MySQL connections, so this posts the data to the small bridge server in
+            <code>bridge/</code> (run <code>npm install &amp;&amp; npm start</code> there), which writes it to your database.
+          </p>
+          <label class="full">Bridge URL <input type="url" id="bridgeUrl" value="http://localhost:8787/api/products"></label>
+          <div class="fields">
+            <label>Table name <input type="text" id="bridgeTable" value="products"></label>
+            <label>Token (optional) <input type="password" id="bridgeToken" autocomplete="off"></label>
+          </div>
+          <div class="actions">
+            <button id="bridgeTest">Test connection</button>
+            <button id="bridgeSend" class="primary">Send to MySQL</button>
+          </div>
+          <div class="bar"><div id="bridgeBar"></div></div>
+          <p id="bridgeMsg" class="muted"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>

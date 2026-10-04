@@ -1,0 +1,8 @@
+# Scraped sample data from real sites: keep local
+test-output/
+
+# Build artifacts (re-create with: cd product-spider && zip -r ../dist/product-spider-<version>.zip manifest.json background.js content lib popup dashboard icons)
+dist/*.zip
+
+node_modules/
+.env

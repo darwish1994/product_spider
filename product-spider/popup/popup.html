@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Product Spider</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="../icons/icon32.png" alt="" width="22" height="22">
+    <h1>Product Spider</h1>
+    <span id="total" class="pill" title="Products stored">0</span>
+  </header>
+
+  <section>
+    <div class="site" id="site">—</div>
+    <div class="row">
+      <button id="scrape" class="primary">Scrape this page</button>
+      <label class="check"><input type="checkbox" id="scroll"> Scroll first</label>
+    </div>
+    <div id="scrapeResult" class="result" hidden></div>
+  </section>
+
+  <section>
+    <h2>Crawl this site</h2>
+    <div class="row">
+      <label class="inline">Max pages <input type="number" id="maxPages" min="1" max="100000" value="200"></label>
+      <label class="inline">Depth <input type="number" id="maxDepth" min="0" max="50" value="5"></label>
+    </div>
+    <div class="row">
+      <button id="crawl" class="primary">Start crawl</button>
+      <button id="pause" hidden>Pause</button>
+      <button id="resume" hidden>Resume</button>
+      <button id="stop" class="danger" hidden>Stop</button>
+    </div>
+    <div id="status" class="status" hidden>
+      <div class="bar"><div id="barFill"></div></div>
+      <div class="stats">
+        <span><b id="sPages">0</b> pages</span>
+        <span><b id="sQueued">0</b> queued</span>
+        <span><b id="sAdded">0</b> new products</span>
+      </div>
+      <div id="sState" class="muted"></div>
+      <div id="sCurrent" class="muted current"></div>
+    </div>
+  </section>
+
+  <footer>
+    <button id="dashboard">Open dashboard &amp; export</button>
+  </footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

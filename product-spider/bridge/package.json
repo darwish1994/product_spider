@@ -1,0 +1,14 @@
+{
+  "name": "product-spider-mysql-bridge",
+  "version": "1.0.0",
+  "description": "Receives products from the Product Spider Chrome extension and upserts them into MySQL / MariaDB.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js"
+  },
+  "engines": { "node": ">=20.12" },
+  "dependencies": {
+    "mysql2": "^3.11.0"
+  }
+}
